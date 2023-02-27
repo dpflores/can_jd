@@ -12,6 +12,7 @@ g_vector = np.array([0,0,-g]).T
 
 slope_resolutions = {"10":0.01,"100":0.1,"1000":1}
 
+# EDS File
 current_dir = os.path.dirname(os.path.abspath(__file__))
 eds_file_path = os.path.join(current_dir, 'JD2xxx_v1.0.eds')
 
