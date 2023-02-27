@@ -1,5 +1,4 @@
 from can_jd import *
-from axotec.gps import *
 import numpy as np
 
 #CAN
