@@ -1,6 +1,7 @@
 import canopen
 import numpy as np
 import time
+import os
 # Cargar archivo de configuración de dispositivo CANopen
 g = 9.81
 
@@ -11,11 +12,15 @@ g_vector = np.array([0,0,-g]).T
 
 slope_resolutions = {"10":0.01,"100":0.1,"1000":1}
 
+# EDS File
+current_dir = os.path.dirname(os.path.abspath(__file__))
+eds_file_path = os.path.join(current_dir, 'JD2xxx_v1.0.eds')
+
 class CANJD():
     def __init__(self, port='can1', node_id=10, speed0=0):
         network = canopen.Network()
         network.connect(bustype='socketcan', channel=port)
-        self.node = network.add_node(node_id, 'JD2xxx_v1.0.eds')
+        self.node = network.add_node(node_id, eds_file_path)
         self.slope_resolution = slope_resolutions[str(self.node.sdo[0x6000].raw)]
         self.speed = speed0
         
@@ -62,13 +67,19 @@ class CANJD():
         return g_rotated
 
     def get_accel(self):
-        ''' Retorna el modulo de la aceleracion respecto al eje fijo, descontando el efecto de la gravedad
+        ''' Retorna el vector de la aceleracion respecto al eje fijo, descontando el efecto de la gravedad
         en la aceleracion propia (proper acceleration)'''
         f = self.get_prop_accel_vector()
         g = self.get_rot_grav()
         r = f + g
         #r_norm = np.linalg.norm(r)
         return r
+    
+    def get_accel_simplified(self):
+        ''' Retorna el modulo de la aceleración, descontando el eje x, pues tiene muy poca influencia
+        en la aceleracion propia (proper acceleration)'''
+        accel_vector = self.get_accel()
+        return np.linalg.norm(accel_vector[0:1])
 
     def get_speed_stimation(self, iterations=4):
         start = time.time()

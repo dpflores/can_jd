@@ -2,6 +2,8 @@ from can_jd import *
 import numpy as np
 
 #CAN
+port = "can1"
+id = 10
 can_jd = CANJD(port, id)    
 
 
